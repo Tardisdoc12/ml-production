@@ -1,13 +1,18 @@
 ################################################################################
-# filename: test_smoke.py
+# filename: test_scrapper.py
 # Author: Jean Anquetil
 # Email: janquetil@e-vitech.com
 # Date: 12/05,2025
 ################################################################################
 
+import os
 
-def test_smoke():
-    assert 1 + 1 == 2
+################################################################################
+
+
+def test_scraper_creates_files():
+    files = os.listdir("data/raw")
+    assert len(files) >= 1
 
 
 ################################################################################
