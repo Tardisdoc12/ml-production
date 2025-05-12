@@ -5,3 +5,10 @@ pytest
 datasets
 transformers
 scikit-learn
+beautifulsoup4
+requests
+sqlalchemy
+pymongo
+python-dotenv
+tweetkit
+tweepy

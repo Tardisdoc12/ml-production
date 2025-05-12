@@ -13,6 +13,6 @@ au bout de trois tweets considéré harcelement, on ban ip la personne.
 - Classification : Accuracy, F1‑score
 
 ## Contraintes
-- Latence < 200 ms par requête
+- Latence < 200 ms par requête sur des ip distantes (Chine/Australie)
 - Taille modèle < 100 Mo
 - Budget GPU : T4 max
