@@ -18,28 +18,59 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class Tweet(Base):
-    __tablename__ = 'tweets'
+    __tablename__ = "tweets"
     id = Column(String, primary_key=True)
     text = Column(String)
     author_id = Column(String)
     harassment = Column(Boolean)
 
+
 ################################################################################
 
 harassment_keywords_en = [
-    "idiot", "dumb", "stupid", "moron", "loser", "fat", "ugly", 
-    "kill yourself", "kys", "die", "go to hell", "worthless",
-    "freak", "slut", "bitch", "whore", "trash", 
-    "retard", "nobody likes you", "no one cares", 
-    "shut up", "annoying", "you suck", "hate you", 
-    "go away", "loser", "creep", "jerk", "pervert", 
-    "harass", "bully", "abuse", "cyberbully"
+    "idiot",
+    "dumb",
+    "stupid",
+    "moron",
+    "loser",
+    "fat",
+    "ugly",
+    "kill yourself",
+    "kys",
+    "die",
+    "go to hell",
+    "worthless",
+    "freak",
+    "slut",
+    "bitch",
+    "whore",
+    "trash",
+    "retard",
+    "nobody likes you",
+    "no one cares",
+    "shut up",
+    "annoying",
+    "you suck",
+    "hate you",
+    "go away",
+    "loser",
+    "creep",
+    "jerk",
+    "pervert",
+    "harass",
+    "bully",
+    "abuse",
+    "cyberbully",
 ]
 
 ################################################################################
 
-def get_tweet(number_tweets : int = 100, list_words_find : list[str] = harassment_keywords_en) -> list:
+
+def get_tweet(
+    number_tweets: int = 100, list_words_find: list[str] = harassment_keywords_en
+) -> list:
     test = load_dotenv()
     if not test:
         raise FileExistsError(".env file is not found or doesn't exist")
@@ -49,46 +80,47 @@ def get_tweet(number_tweets : int = 100, list_words_find : list[str] = harassmen
     response = client.search_recent_tweets(
         query=query,
         tweet_fields=["created_at", "author_id", "lang"],
-        max_results=number_tweets
+        max_results=number_tweets,
     )
     tweets = []
     for tweet in response.data:
         t = {
-            'id':tweet.id,
-            'created_at':tweet.created_at,
-            'author_id':tweet.author_id,
-            'text':tweet.text
+            "id": tweet.id,
+            "created_at": tweet.created_at,
+            "author_id": tweet.author_id,
+            "text": tweet.text,
         }
         tweets.append(t)
     return tweets
 
+
 ################################################################################
 
-def save_tweet(tweets : dict) -> None:
+
+def save_tweet(tweets: dict) -> None:
     with open("data/raw/data.json", "w", encoding="utf-8") as f:
         json.dump(tweets, f, indent=4, ensure_ascii=False)
-    engine = create_engine('sqlite:///tweets_test.db')
+    engine = create_engine("sqlite:///tweets_test.db")
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     for t in tweets:
-        print(t['text'])
+        print(t["text"])
         a = bool(int(input("est-ce mal (0/1)")))
         tweet = Tweet(
-            id= t['id'],
-            text=t['text'],
-            author_id=t['author_id'],
-            harassment = a
+            id=t["id"], text=t["text"], author_id=t["author_id"], harassment=a
         )
         session.merge(tweet)
     session.commit()
-    
+
 
 ################################################################################
+
 
 def main() -> None:
     tweets = get_tweet(10, harassment_keywords_en)
     save_tweet(tweets)
+
 
 ################################################################################
 
