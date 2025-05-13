@@ -9,10 +9,11 @@ import os
 import json
 from dotenv import load_dotenv
 import tweepy
-from sqlalchemy import create_engine, Column, Boolean, String#, DateTime
+from sqlalchemy import create_engine, Column, Boolean, String  # , DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-#from datetime import datetime
+
+# from datetime import datetime
 
 ################################################################################
 
