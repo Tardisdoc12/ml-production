@@ -51,33 +51,43 @@ def get_tweet(number_tweets : int = 100, list_words_find : list[str] = harassmen
         tweet_fields=["created_at", "author_id", "lang"],
         max_results=number_tweets
     )
-    return response
+    tweets = []
+    for tweet in response.data:
+        t = {
+            'id':tweet.id,
+            'created_at':tweet.created_at,
+            'author_id':tweet.author_id,
+            'text':tweet.text
+        }
+        tweets.append(t)
+    return tweets
 
 ################################################################################
 
 def save_tweet(tweets : dict) -> None:
-    engine = create_engine('sqlite:///tweets.db')
+    with open("data/raw/data.json", "w", encoding="utf-8") as f:
+        json.dump(tweets, f, indent=4, ensure_ascii=False)
+    engine = create_engine('sqlite:///tweets_test.db')
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
-    for t in tweets.data:
-        print(t.text)
+    for t in tweets:
+        print(t['text'])
         a = bool(int(input("est-ce mal (0/1)")))
         tweet = Tweet(
-            id= t.id,
-            text=t.text,
-            author_id=t.author_id,
+            id= t['id'],
+            text=t['text'],
+            author_id=t['author_id'],
             harassment = a
         )
         session.merge(tweet)
     session.commit()
-    with open("data/raw/data.json", "w", encoding="utf-8") as f:
-        json.dump(tweets, f, indent=4, ensure_ascii=False)
+    
 
 ################################################################################
 
 def main() -> None:
-    tweets = get_tweet(100, harassment_keywords_en)
+    tweets = get_tweet(10, harassment_keywords_en)
     save_tweet(tweets)
 
 ################################################################################
