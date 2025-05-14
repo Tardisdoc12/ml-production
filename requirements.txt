@@ -10,5 +10,5 @@ requests
 sqlalchemy
 pymongo
 python-dotenv
-tweetkit
+matplotlib
 tweepy

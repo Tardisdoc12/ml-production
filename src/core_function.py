@@ -7,13 +7,13 @@
 
 # import numpy as np
 from datasets import load_dataset
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     Trainer,
-    TrainingArguments,
 )
+from transformers.training_args import TrainingArguments
 
 ################################################################################
 
@@ -22,7 +22,7 @@ def get_dataset(path: str) -> dict:
     """
     Return dataset
     """
-    return load_dataset("json", data_files=path)
+    return load_dataset(path.split(".")[-1], data_files=path)
 
 
 ################################################################################
@@ -40,12 +40,20 @@ def get_model(model_name: str) -> tuple:
 ################################################################################
 
 
-def compute_metrics(pred: dict) -> dict:
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
-    f1 = f1_score(labels, preds, average="binary")
-    acc = accuracy_score(labels, preds)
-    return {"accuracy": acc, "f1": f1}
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    probs = predictions[:, 1]  # classe positive
+
+    # 👇 seuil personnalisé
+    threshold = 0.7
+    preds = (probs >= threshold).astype(int)
+
+    return {
+        "accuracy": accuracy_score(labels, preds),
+        "precision": precision_score(labels, preds),
+        "recall": recall_score(labels, preds),
+        "f1": f1_score(labels, preds),
+    }
 
 
 ################################################################################
@@ -65,7 +73,7 @@ def trainer(
         per_device_eval_batch_size=16,
         num_train_epochs=3,
         weight_decay=0.01,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
     )
     trainer = Trainer(
         model=model,
