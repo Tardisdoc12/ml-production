@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+data/processed/
+Train/
 
 # C extensions
 *.so
