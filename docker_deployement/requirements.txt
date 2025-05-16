@@ -1,0 +1,4 @@
+pydantic
+fastapi
+scikit-learn
+uvicorn
