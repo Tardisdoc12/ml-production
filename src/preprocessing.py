@@ -11,6 +11,17 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from transformers import AutoTokenizer
 
 ################################################################################
+model_name = "vinai/bertweet-base"
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+
+
+def tokenize_function(example):
+    return tokenizer(
+        example["tweet_text"],
+        padding="max_length",
+        truncation=True,
+        max_length=128,  # la limite pour BERTweet est 128 tokens
+    )
 
 
 def treat_data(dataset_to_treat: Dataset) -> tuple[Dataset, Dataset, Dataset]:
@@ -22,6 +33,16 @@ def treat_data(dataset_to_treat: Dataset) -> tuple[Dataset, Dataset, Dataset]:
     get_repartition(dataset_to_treat)
 
     # Assume que la colonne 'label' contient les classes
+    train_dataset, val_dataset, test_dataset = get_train_val_test_from_dataframe(
+        train_df
+    )
+    return train_dataset, val_dataset, test_dataset
+
+
+################################################################################
+
+
+def get_train_val_test_from_dataframe(train_df):
     y = train_df["cyberbullying_type"]
 
     splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
@@ -46,8 +67,7 @@ def treat_data(dataset_to_treat: Dataset) -> tuple[Dataset, Dataset, Dataset]:
     }
     train_dataset = train_dataset.map(add_labels)
     val_dataset = val_dataset.map(add_labels)
-
-    print(train_dataset, "\n", val_dataset, "\n", test_dataset)
+    test_dataset = test_dataset.map(add_labels)
     return train_dataset, val_dataset, test_dataset
 
 
@@ -72,10 +92,10 @@ def transform_text_to_int(example):
 ################################################################################
 
 
-def tokenize_function(example):
-    model_name = "distilbert-base-uncased"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    return tokenizer(example["tweet_text"], padding="max_length", truncation=True)
+# def tokenize_function(example):
+#     model_name = "vinai/bertweet-base" #"distilbert-base-uncased"
+#     tokenizer = AutoTokenizer.from_pretrained(model_name,use_fast=False)
+#     return tokenizer(example["tweet_text"], padding="max_length", truncation=True)
 
 
 ################################################################################

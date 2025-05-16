@@ -28,19 +28,21 @@ def get_dataset(path: str) -> dict:
 ################################################################################
 
 
-def get_model(model_name: str) -> tuple:
+def get_model(model_name: str, from_output_dir=None) -> tuple:
     """
     Return tokenizer and model
     """
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    if not from_output_dir is None:
+        model_name = from_output_dir
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     return tokenizer, model
 
 
 ################################################################################
 
 
-def compute_metrics(eval_pred):
+def compute_all_metrics(eval_pred):
     predictions, labels = eval_pred
     probs = predictions[:, 1]  # classe positive
 
@@ -59,8 +61,28 @@ def compute_metrics(eval_pred):
 ################################################################################
 
 
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    probs = predictions[:, 1]  # probas pour classe 1 (haineux)
+
+    # Inverser le seuil : ici on veut détecter la classe 0 (non haineux)
+    threshold = 0.7
+    preds = (probs < threshold).astype(int)  # 1 si proba < 0.7 ⇒ prédire classe 0
+
+    return {
+        "f1": f1_score(labels, preds, pos_label=0),
+    }
+
+
+################################################################################
+
+
 def trainer(
-    model_name: str, train_dataset: dict, eval_dataset: dict, output_dir: str
+    model_name: str,
+    train_dataset: dict,
+    eval_dataset: dict,
+    output_dir: str,
+    callback_metrics=compute_all_metrics,
 ) -> None:
     """
     Train model
@@ -81,7 +103,7 @@ def trainer(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         tokenizer=tokenizer,
-        compute_metrics=compute_metrics,
+        compute_metrics=callback_metrics,
     )
     trainer.train()
 

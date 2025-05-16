@@ -1,0 +1,13 @@
+{
+  "metrics": "              precision    recall  f1-score   support\n\n           0       0.39      0.94      0.55       794\n           1       0.98      0.71      0.82      3975\n\n    accuracy                           0.75      4769\n   macro avg       0.69      0.82      0.69      4769\nweighted avg       0.89      0.75      0.78      4769\n",
+  "confusion_matrix": [
+    [
+      747,
+      47
+    ],
+    [
+      1156,
+      2819
+    ]
+  ]
+}
