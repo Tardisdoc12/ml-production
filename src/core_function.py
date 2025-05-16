@@ -32,7 +32,7 @@ def get_model(model_name: str, from_output_dir=None) -> tuple:
     """
     Return tokenizer and model
     """
-    if not from_output_dir is None:
+    if from_output_dir is not None:
         model_name = from_output_dir
     tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
     model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
