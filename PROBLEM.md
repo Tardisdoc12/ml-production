@@ -10,7 +10,7 @@ exemple => "harcelement" on empêche le tweet d'être publié.
 au bout de trois tweets considéré harcelement, on ban ip la personne.
 
 ## Métriques
-- Classification : Accuracy, F1‑score
+- Classification : Accuracy, F1‑score sur les labels non haineux
 
 ## Contraintes
 - Latence < 200 ms par requête sur des ip distantes (Chine/Australie)

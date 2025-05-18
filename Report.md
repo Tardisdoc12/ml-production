@@ -30,3 +30,7 @@ On a alors les résultats suivant:
 - RandomForestClassifier détecte 94% des tweets non haineux correctement et 74% des tweets haineux correctement.
 
 Le meilleur modèle pour notre cas est donc le RandomForestClassifier.
+
+## Déploiement:
+Une fois choisi, on déploie une image Docker (non tester car docker à des soucis sur mon ordinateur) qui permet d'avoir une A.P.I pour les requêtes. 
+On peut tester toutes sortes de tweets. On remarquera que certains tweets haineux sont classé en non-haineux mais très peu dans l'autre sens. C'est ce qui était attendu.
